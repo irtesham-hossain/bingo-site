@@ -545,7 +545,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
     }).join("");
     var teamNo = editing
       ? '<div class="field" style="max-width:220px"><label for="team-no">Team number</label><input type="text" id="team-no" data-coll="team" data-field="teamNo" value="' + esc(st.teamNo) + '" placeholder="e.g. 07"></div>'
-      : '<span class="team-no">Team ' + (st.teamNo ? esc(st.teamNo) : "no. to be added") + '</span>';
+      : '<span class="team-no">Team ' + (st.teamNo ? esc(st.teamNo) : "07") + '</span>';
     var add = editing ? '<div><button class="btn small" type="button" id="add-member">Add member</button></div>' : '';
     return '<section class="page"><div class="page-head"><span class="eyebrow">Team</span><h2>Who builds BinGo</h2><p>Two leaders run the project, keep the team on schedule and give the weekly update in class. Every member owns one part of the build.</p></div>' +
       '<div class="team-bar">' + teamNo + '</div><div class="members">' + cards + '</div>' + add + '</section>';
