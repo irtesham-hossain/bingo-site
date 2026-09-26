@@ -298,78 +298,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
   }
  ],
  "papers": [
-  {
-   "id": "p1",
-   "owner": "shared",
-   "title": "Trash Barrel Robots in the City",
-   "authors": "F. Bu, I. Mandel, W.-Y. Lee, W. Ju",
-   "venue": "Companion of the 2023 ACM/IEEE International Conference on Human-Robot Interaction, pp. 875 to 877",
-   "year": "2023",
-   "link": "https://dl.acm.org/doi/10.1145/3568294.3580206",
-   "hri24": false,
-   "summary": "Two trash barrel robots, one for landfill waste and one for recycling, were deployed in public plazas in New York City. A hidden researcher drove them (Wizard of Oz). Most people welcomed the robots and gave them trash, the robots got strangers talking to each other, and a few people found them creepy.",
-   "relevance": "Closest prior work. The robots never had to find people on their own. BinGo tries to do that part autonomously."
-  },
-  {
-   "id": "p2",
-   "owner": "shared",
-   "title": "Initiating interactions and negotiating approach: a robotic trash can in the field",
-   "authors": "K. Fischer, S. Yang, B. Mok, R. Maheshwari, D. Sirkin, W. Ju",
-   "venue": "AAAI Spring Symposium Series",
-   "year": "2015",
-   "link": "",
-   "hri24": false,
-   "summary": "An early field study of a robotic trash can built on a Roomba Create base and run at an on-campus cafe. It looks at how the robot and people start an interaction and how they negotiate the approach. A person giving no social signals at all can itself mean they do not want to interact.",
-   "relevance": "Guides how BinGo approaches someone, and when it should hold back."
-  },
-  {
-   "id": "p3",
-   "owner": "shared",
-   "title": "Field Notes on Deploying Research Robots in Public Spaces",
-   "authors": "F. Bu, A. Bremers, M. Colley, W. Ju",
-   "venue": "arXiv:2404.18375",
-   "year": "2024",
-   "link": "https://arxiv.org/abs/2404.18375",
-   "hri24": false,
-   "summary": "Lessons from deploying two Wizard of Oz trash barrel robots in plazas in Manhattan and Brooklyn over the summers of 2022 and 2023, about 20 hours of field time in total.",
-   "relevance": "A practical guide for our own cafeteria test: permissions, ethics and running sessions in public."
-  },
-  {
-   "id": "p4",
-   "owner": "shared",
-   "title": "Making Sense of Robots in Public Spaces: A Study of Trash Barrel Robots",
-   "authors": "",
-   "venue": "ACM Transactions on Human-Robot Interaction",
-   "year": "2025",
-   "link": "https://dl.acm.org/doi/10.1145/3731252",
-   "hri24": false,
-   "summary": "Analyses video and interviews from a public deployment of two trash barrel robots to understand how people work out what a robot they meet in public is doing.",
-   "relevance": "Helps us design BinGo's eyes, sounds and movement so people can read its intent."
-  },
-  {
-   "id": "p5",
-   "owner": "shared",
-   "title": "Trash in Motion: Emergent Interactions with a Robotic Trashcan",
-   "authors": "B. Brown, F. Bu, I. Mandel, W. Ju",
-   "venue": "CHI 2024, article 591",
-   "year": "2024",
-   "link": "",
-   "hri24": false,
-   "summary": "",
-   "relevance": ""
-  },
-  {
-   "id": "p6",
-   "owner": "shared",
-   "title": "SSUP-HRI: Social Signaling in Urban Public Human-Robot Interaction dataset",
-   "authors": "F. Bu, W. Ju",
-   "venue": "arXiv:2403.10994",
-   "year": "2024",
-   "link": "https://arxiv.org/abs/2403.10994",
-   "hri24": false,
-   "summary": "Data collected during the trash barrel robot deployments, shared by the authors on request.",
-   "relevance": "A possible source of real deployment data to test our gesture detector before we record our own."
-  },
+  
   {
    "id": "i1",
    "owner": "m1",
@@ -1101,10 +1030,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
         '<li>Evaluate BinGo in a public space at IUB with student users: detection accuracy, time to reach the person and how people rate the experience.</li>' +
       '</ol></div>' +
       '<div class="two"><div class="prose"><h3>Research gap</h3>' +
-        '<p>Robotic trash cans have been studied before. An early one was built on a Roomba base and tested at an on-campus cafe [2]. Later, two trash barrel robots were deployed in public plazas in New York City, and most people welcomed them [1][3].</p>' +
+        '<p>Robotic trash cans have been studied before. An early one was built on a Roomba base and tested at an on-campus cafe . Later, two trash barrel robots were deployed in public plazas in New York City, and most people welcomed them .</p>' +
         '<p>In the New York deployments, though, a hidden researcher drove the robots by remote control. This is called the Wizard of Oz method. The robots never had to decide by themselves who wanted them. These studies tell us a lot about how people react to a moving bin. They say little about how the bin itself can spot a person who wants to throw something away, or whether that works on hardware a student team can afford.</p>' +
         '<p>The deployments we have found so far were all in the United States. BinGo is built and tested at a university in Dhaka.</p>' +
-        '<p class="muted" style="font-size:.9rem">Numbers in brackets refer to the starter papers on the <a href="#literature">Literature</a> page.</p></div>' +
+        // '<p class="muted" style="font-size:.9rem">Numbers in brackets refer to the starter papers on the <a href="#literature">Literature</a> page.</p></div>' +
+
       '<div class="panel soft"><h3>What BinGo adds</h3><ul class="clean"><li>The robot decides on its own, using pose estimation instead of a human driver.</li><li>It runs on about ৳29,000 of parts from Dhaka shops.</li><li>It speaks Bangla and shows simple eyes, so people can tell what it is doing.</li><li>It is tested with students in a South Asian campus setting.</li></ul></div></div>' +
       '<div><span class="eyebrow">Research questions</span>' +
         '<div class="rq" style="margin-top:12px"><span class="rq-id">RQ1</span><p>How reliably can a pose-estimation model running on a Raspberry Pi 4 tell apart a person who wants to throw something away from people who are just moving around?</p></div>' +
@@ -1119,7 +1049,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
         '<tr><td>User rating</td><td>Short survey after use: comfort, usefulness, would use again (5 point scale)</td><td class="mono">20+ students</td></tr>' +
         '<tr><td>Effect of social cues (RQ3)</td><td>Same test with eyes and voice turned on, then off</td><td class="mono">compare ratings</td></tr>' +
       '</tbody></table></div></div>' +
-      '<div class="panel note"><h3>Scope for this semester</h3><p>Indoors on flat floors, one request at a time, good lighting. No stairs, no outdoor use and no sorting of recyclables. A 10 to 15 L bin, so BinGo suits a cafeteria corner or corridor, not a whole floor.</p></div>' +
+      // '<div class="panel note"><h3>Scope for this semester</h3><p>Indoors on flat floors, one request at a time, good lighting. No stairs, no outdoor use and no sorting of recyclables. A 10 to 15 L bin, so BinGo suits a cafeteria corner or corridor, not a whole floor.</p></div>' +
     '</section>';
   }
 
@@ -1218,7 +1148,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
     return '<section class="page">' +
       '<div class="page-head"><span class="eyebrow">Literature review</span><h2>Papers we are reading</h2><p>Click a member to expand their papers. Click any paper title that has a full write-up to open a pop-up with Objective, Methods, Results, Conclusions and Limitations.</p></div>' +
       form +
-      '<div style="display:grid;gap:12px"><div class="group-head"><h3>Starter reading</h3><span class="muted" style="font-size:.9rem">The trash barrel robot line of work that BinGo builds on</span></div><div class="papers">' + sharedHtml + '</div></div>' +
+      // '<div style="display:grid;gap:12px"><div class="group-head"><h3>Starter reading</h3><span class="muted" style="font-size:.9rem">The trash barrel robot line of work that BinGo builds on</span></div><div class="papers">' + sharedHtml + '</div></div>' +
       groups +
     '</section>';
   }
