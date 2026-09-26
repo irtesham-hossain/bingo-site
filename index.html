@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BinGo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style id="bingo-css">
+:root{
+  --bg:#F1F4F0; --surface:#FFFFFF; --ink:#15201B; --muted:#56655D; --line:#D3DCD6;
+  --green:#1D6A50; --green-ink:#FFFFFF; --green-soft:#E0EDE6; --yellow:#E3A800; --yellow-soft:#FFF3C7;
+  --screen:#0B1511; --eye:#7CF0C0; --wheel:#26332D; --danger:#B3261E;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1512; --surface:#16201B; --ink:#E4ECE7; --muted:#9AAAA1; --line:#2B3933;
+    --green:#5DBE95; --green-ink:#0E1512; --green-soft:#1A2D25; --yellow:#F2C230; --yellow-soft:#2E2812;
+    --screen:#050A08; --eye:#8DF5C9; --wheel:#3A4943; --danger:#F2847C; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1512; --surface:#16201B; --ink:#E4ECE7; --muted:#9AAAA1; --line:#2B3933;
+  --green:#5DBE95; --green-ink:#0E1512; --green-soft:#1A2D25; --yellow:#F2C230; --yellow-soft:#2E2812;
+  --screen:#050A08; --eye:#8DF5C9; --wheel:#3A4943; --danger:#F2847C; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img,svg{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--green)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.6rem,3.2vw,2.2rem);font-weight:700;letter-spacing:-0.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex:0 0 auto}
+.brand-mark{width:30px;height:30px}
+.brand-name{font-family:var(--display);font-weight:800;font-size:1.45rem;letter-spacing:-0.02em}
+.brand-name span{color:var(--green)}
+.nav{display:flex;gap:4px;overflow-x:auto;flex:1 1 auto;scrollbar-width:none;justify-content:flex-end}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;text-decoration:none;color:var(--muted);font-weight:500;font-size:.93rem;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.nav a:hover{color:var(--ink);background:var(--green-soft)}
+.nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.edit-toggle{flex:0 0 auto;font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:8px;cursor:pointer}
+.edit-toggle:hover{border-color:var(--green)}
+@media (max-width:760px){
+  .top-row{flex-wrap:wrap;gap:8px 12px}
+  .nav{order:3;flex-basis:100%;justify-content:flex-start;margin-inline:-4px}
+  .edit-toggle{margin-left:auto}
+}
+
+main{padding-block:40px 120px}
+section.page{display:grid;gap:40px}
+.page-head{display:grid;gap:10px;max-width:68ch}
+.page-head p{color:var(--muted);font-size:1.05rem}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:center}
+.hero h1{font-size:clamp(3.4rem,11vw,7rem);font-weight:800;letter-spacing:-0.04em;line-height:.9}
+.hero h1 span{color:var(--green)}
+.hero-copy{display:grid;gap:18px}
+.hero-lead{font-size:clamp(1.1rem,2.2vw,1.3rem);max-width:34ch;line-height:1.45}
+.hero-art{justify-self:center;width:100%;max-width:340px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:600;font-size:.95rem;text-decoration:none;padding:10px 16px;border-radius:10px;border:1px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--green-ink)}
+.btn.small{padding:6px 12px;font-size:.85rem}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.hero-art{max-width:240px;grid-row:1}}
+
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.hud div{padding:14px 16px;border-right:1px solid var(--line);display:grid;gap:2px}
+.hud div:last-child{border-right:0}
+.hud b{font-family:var(--mono);font-weight:500;font-size:.98rem}
+@media (max-width:760px){.hud div{border-right:0;border-bottom:1px solid var(--line)}.hud div:last-child{border-bottom:0}}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.prose{display:grid;gap:14px;max-width:66ch}
+.prose p{font-size:1.02rem}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px;align-content:start}
+.panel.soft{background:var(--green-soft);border-color:transparent}
+.panel.note{background:var(--yellow-soft);border-color:transparent}
+
+ul.clean{margin:0;padding-left:1.2em;display:grid;gap:6px}
+ol.clean{margin:0;padding-left:1.4em;display:grid;gap:8px}
+
+/* team */
+.team-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.team-no{font-family:var(--mono);font-size:.95rem;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px}
+.members{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.member{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:10px;align-content:start}
+.avatar{width:48px;height:48px;border-radius:12px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.2rem}
+.member-name{font-family:var(--display);font-weight:700;font-size:1.15rem}
+.badge{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--yellow);color:#1b1500;font-weight:500;justify-self:start}
+.member-role{color:var(--muted);font-size:.95rem}
+.socials{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.socials a{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;font-family:var(--mono);padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);text-decoration:none;color:var(--ink);transition:border-color .15s}
+.socials a:hover{border-color:var(--green);color:var(--green)}
+.socials .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.socials .dot.li{background:#0A66C2}
+.socials .dot.gh{background:#333}
+.socials .dot.rg{background:#00CCBB}
+
+/* research */
+.objective{font-family:var(--display);font-size:clamp(1.25rem,2.6vw,1.6rem);font-weight:500;line-height:1.35;max-width:40ch}
+.rq{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;padding:18px 0;border-top:1px solid var(--line)}
+.rq:last-child{border-bottom:1px solid var(--line)}
+.rq-id{font-family:var(--mono);font-weight:500;color:var(--green);font-size:.95rem;padding-top:2px}
+.rq p{font-size:1.08rem;max-width:62ch}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.group td{background:var(--green-soft);font-family:var(--mono);font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--green);font-weight:500;padding-block:7px}
+tr.total td{font-weight:600;border-top:2px solid var(--ink)}
+.tag{font-family:var(--mono);font-size:.7rem;padding:2px 6px;border-radius:5px;background:var(--green-soft);color:var(--green);white-space:nowrap}
+.tag.est{background:transparent;border:1px solid var(--line);color:var(--muted)}
+
+/* system */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:0;counter-reset:step;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.step{padding:20px;display:grid;gap:8px;align-content:start;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.step:nth-child(3n){border-right:0}
+.step:nth-last-child(-n+3){border-bottom:0}
+.step-n{font-family:var(--mono);font-size:.8rem;color:var(--green);font-weight:500}
+.step h3{font-size:1.1rem}
+.step p{color:var(--muted);font-size:.95rem}
+@media (max-width:760px){.flow{grid-template-columns:1fr}.step{border-right:0}.step:nth-last-child(-n+3){border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}}
+.arch{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.arch-link{display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:.78rem;color:var(--muted);gap:6px}
+.arch-link .wire{width:2px;height:100%;min-height:40px;background:repeating-linear-gradient(var(--green) 0 6px,transparent 6px 11px)}
+@media (max-width:760px){.arch{grid-template-columns:1fr}.arch-link .wire{height:30px;min-height:30px}}
+.chip-list{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.86rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+
+/* literature */
+.meters{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.meter{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:8px}
+.meter-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.bar.y i{background:var(--yellow)}
+.meter small{color:var(--muted);font-size:.82rem}
+.papers{display:grid;gap:12px}
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:8px}
+.paper-title{font-weight:600;font-size:1.02rem;line-height:1.4}
+.paper-meta{font-size:.88rem;color:var(--muted)}
+.paper-row{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;font-size:.93rem}
+.paper-row dt{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.paper-row dd{margin:0}
+@media (max-width:560px){.paper-row{grid-template-columns:1fr}}
+.group-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;padding-top:8px}
+.empty{color:var(--muted);font-style:italic;padding:14px 0}
+
+/* paper title button */
+.paper-title-btn{background:none;border:none;padding:0;margin:0;font:inherit;font-weight:600;font-size:1.02rem;line-height:1.4;color:var(--green);text-align:left;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.paper-title-btn:hover{color:var(--ink)}
+.paper-title-btn:focus-visible{outline:3px solid var(--yellow);outline-offset:2px;border-radius:4px}
+.paper-title-static{font-weight:600;font-size:1.02rem;line-height:1.4}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(10,20,15,.55);display:grid;place-items:center;padding:20px;backdrop-filter:blur(2px)}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;max-width:min(720px,100%);max-height:min(85vh,860px);width:100%;display:grid;grid-template-rows:auto 1fr;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px;border-bottom:1px solid var(--line);background:var(--bg)}
+.modal-head h3{font-size:1.15rem;line-height:1.35;margin:0}
+.modal-head .eyebrow{margin-bottom:4px}
+.modal-close{flex:0 0 auto;font:inherit;font-size:1.4rem;line-height:1;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.modal-close:hover{border-color:var(--danger);color:var(--danger)}
+.modal-body{padding:22px;overflow-y:auto;display:grid;gap:16px}
+.modal-body h4{font-family:var(--mono);font-weight:500;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--green);margin:0 0 4px}
+.modal-body p{font-size:.98rem;line-height:1.6}
+.modal-body ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.96rem}
+.modal-meta{font-size:.86rem;color:var(--muted)}
+.modal-body .paper-row{grid-template-columns:120px 1fr}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--line);background:var(--bg);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* updates */
+.timeline{display:grid;gap:18px}
+.update{display:grid;grid-template-columns:150px 1fr;gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.update-when{display:grid;gap:4px;align-content:start}
+.update-week{font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.2}
+.update-body{display:grid;gap:16px}
+.update-body h4{margin:0 0 6px;font-family:var(--mono);font-weight:500;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:640px){.update{grid-template-columns:1fr;gap:12px}}
+
+/* forms and edit */
+.form{display:grid;gap:12px;background:var(--surface);border:1px dashed var(--green);border-radius:14px;padding:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.form-grid{grid-template-columns:1fr}}
+.field{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
+.field.full{grid-column:1/-1}
+input[type=text],input[type=url],input[type=date],select,textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.check{display:flex;gap:8px;align-items:center;font-size:.92rem;color:var(--ink)}
+.editbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--ink);color:var(--bg);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))}
+.editbar-row{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.editbar p{font-size:.92rem}
+.editbar .btn{border-color:var(--bg);color:var(--bg)}
+.editbar .btn.primary{background:var(--yellow);border-color:var(--yellow);color:#1b1500}
+.editbar .btn[disabled]{opacity:.55;cursor:default}
+.notice{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:40;max-width:min(560px,calc(100% - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-size:.92rem;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+
+/* robot art */
+.r-body{fill:var(--green)}
+.r-rib{stroke:var(--green-ink);stroke-opacity:.25;stroke-width:3}
+.r-lid{fill:var(--yellow)}
+.r-chassis{fill:var(--ink)}
+.r-wheel{fill:var(--wheel)}
+.r-hub{fill:var(--bg)}
+.r-screen{fill:var(--screen)}
+.r-eye{fill:var(--eye);transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+.r-cam{fill:var(--screen)}
+.r-cam-ring{fill:none;stroke:var(--bg);stroke-width:2}
+.r-shadow{fill:var(--ink);opacity:.1}
+.r-cup{fill:var(--surface);stroke:var(--ink);stroke-width:2.5}
+.r-cup-band{fill:var(--yellow)}
+.r-motion{stroke:var(--muted);stroke-width:3;stroke-linecap:round}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion: reduce){.r-eye{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="application/json" id="bingo-state">
+{
+  "teamNo": "",
+  "members": [
+    {"id":"m1","name":"Irtesham Hossain","sid":"2420891","leader":"1","role":"Software: vision and decision logic on the Raspberry Pi","linkedin":"https://www.linkedin.com/in/irtesham-hossain-aa977612a/","github":"https://github.com/irtesham-hossain","researchgate":"https://www.researchgate.net/profile/Irtesham-Hossain","intro":"CS Student @ IUB | Aspiring Machine Learning Engineer | Exploring Software Architecture, Data & Intelligent Systems"},
+    {"id":"m2","name":"Maliha Rahman","sid":"2420913","leader":"2","role":"Hardware: chassis, wiring and power","linkedin":"https://www.linkedin.com/in/maliha-rahman-0b0856425/","github":"https://github.com/RahmanMaliha","researchgate":"https://www.researchgate.net/profile/Maliha-Rahman-22","intro":"CSE student interested in software development and technology. Currently learning, building projects, and developing technical skills through hands-on experience."},
+    {"id":"m3","name":"Imtia Amir Nisha","sid":"2311493","leader":"","role":"Software: motor control and sensors on the ESP32","linkedin":"https://www.linkedin.com/in/imtia-amir-nisha-157065343/","github":"https://github.com/2311493-imtia","researchgate":"https://www.researchgate.net/profile/Imtia-Nisha","intro":"I enjoy studying interesting topics, exploring new things, and becoming better at what I do. I love music and I’m always willing to learn something new, even when it’s challenging."},
+    {"id":"m4","name":"Md. Saykat Khan","sid":"2320771","leader":"","role":"Writing, parts purchase and user study","linkedin":"http://www.linkedin.com/in/md-saykat-khan-235089358","github":"https://github.com/Saykatkhan10","researchgate":"https://www.researchgate.net/profile/Saykat-Khan","intro":""}
+  ],
+  "updates": [
+    {"id":"u1","week":"Week 1 and 2","date":"2026-09-26",
+     "done":"Picked the project domain: Creative Social Robot and Application.\nCompared several ideas and chose BinGo, a mobile dustbin that goes to the person who wants it.\nChecked prior work. The Cornell trash barrel robots were remote controlled, which gives BinGo its research gap.\nDrafted the objective, research gap and three research questions.\nChose the hardware (Raspberry Pi 4 with an ESP32) and made a first budget estimate.\nSet up this website.",
+     "next":"Each member finds 10 papers, at least 3 from the HRI 2024 proceedings.\nConfirm roles and the two leaders.\nCompare shop prices and order the first batch of parts.\nTest MediaPipe Pose on a laptop webcam with the raised-hand gesture.",
+     "blockers":"Paper downloads go through the CR."}
+  ],
+  "papers": [
+    {"id":"p1","owner":"shared","title":"Trash Barrel Robots in the City","authors":"F. Bu, I. Mandel, W.-Y. Lee, W. Ju","venue":"Companion of the 2023 ACM/IEEE International Conference on Human-Robot Interaction, pp. 875 to 877","year":"2023","link":"https://dl.acm.org/doi/10.1145/3568294.3580206","hri24":false,
+     "summary":"Two trash barrel robots, one for landfill waste and one for recycling, were deployed in public plazas in New York City. A hidden researcher drove them (Wizard of Oz). Most people welcomed the robots and gave them trash, the robots got strangers talking to each other, and a few people found them creepy.",
+     "relevance":"Closest prior work. The robots never had to find people on their own. BinGo tries to do that part autonomously."},
+    {"id":"p2","owner":"shared","title":"Initiating interactions and negotiating approach: a robotic trash can in the field","authors":"K. Fischer, S. Yang, B. Mok, R. Maheshwari, D. Sirkin, W. Ju","venue":"AAAI Spring Symposium Series","year":"2015","link":"","hri24":false,
+     "summary":"An early field study of a robotic trash can built on a Roomba Create base and run at an on-campus cafe. It looks at how the robot and people start an interaction and how they negotiate the approach. A person giving no social signals at all can itself mean they do not want to interact.",
+     "relevance":"Guides how BinGo approaches someone, and when it should hold back."},
+    {"id":"p3","owner":"shared","title":"Field Notes on Deploying Research Robots in Public Spaces","authors":"F. Bu, A. Bremers, M. Colley, W. Ju","venue":"arXiv:2404.18375","year":"2024","link":"https://arxiv.org/abs/2404.18375","hri24":false,
+     "summary":"Lessons from deploying two Wizard of Oz trash barrel robots in plazas in Manhattan and Brooklyn over the summers of 2022 and 2023, about 20 hours of field time in total.",
+     "relevance":"A practical guide for our own cafeteria test: permissions, ethics and running sessions in public."},
+    {"id":"p4","owner":"shared","title":"Making Sense of Robots in Public Spaces: A Study of Trash Barrel Robots","authors":"","venue":"ACM Transactions on Human-Robot Interaction","year":"2025","link":"https://dl.acm.org/doi/10.1145/3731252","hri24":false,
+     "summary":"Analyses video and interviews from a public deployment of two trash barrel robots to understand how people work out what a robot they meet in public is doing.",
+     "relevance":"Helps us design BinGo's eyes, sounds and movement so people can read its intent."},
+    {"id":"p5","owner":"shared","title":"Trash in Motion: Emergent Interactions with a Robotic Trashcan","authors":"B. Brown, F. Bu, I. Mandel, W. Ju","venue":"CHI 2024, article 591","year":"2024","link":"","hri24":false,"summary":"","relevance":""},
+    {"id":"p6","owner":"shared","title":"SSUP-HRI: Social Signaling in Urban Public Human-Robot Interaction dataset","authors":"F. Bu, W. Ju","venue":"arXiv:2403.10994","year":"2024","link":"https://arxiv.org/abs/2403.10994","hri24":false,
+     "summary":"Data collected during the trash barrel robot deployments, shared by the authors on request.",
+     "relevance":"A possible source of real deployment data to test our gesture detector before we record our own."},
+
+    {"id":"n1","owner":"m3","title":"Voice-Controlled Movable Smart Dustbin","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A movable smart dustbin controlled by voice commands, with automatic lid opening, full-level detection, foul-smell detection and SMS alerts.",
+     "relevance":"Uses voice commands instead of autonomous detection — a contrast to BinGo's pose-based approach.",
+     "writeup":{
+       "objective":"To develop a movable smart dustbin that can move toward the user using voice commands, automatically open its lid, detect when it is full or has excessive foul smell, and send an alert to the responsible person.",
+       "methods":"The system uses Arduino Uno, ultrasonic sensors, servo motors, gas sensors, GSM, Bluetooth, and a Wi-Fi camera. Voice commands are sent from a mobile application through Bluetooth to control the robot's movement. Ultrasonic sensors detect the user's hand and garbage level, while gas sensors detect foul smell. GSM sends SMS alerts, and the Wi-Fi camera provides live video for navigation and obstacle awareness.",
+       "results":"The prototype was successfully fabricated and operated satisfactorily. The lid automatically opened when a hand was detected, SMS alerts were sent when the dustbin was full or had excessive foul smell, the robot responded to Bluetooth voice commands, and the Wi-Fi camera provided a live video feed.",
+       "conclusions":"The study demonstrated that combining a voice-controlled robot with a smart dustbin can reduce the need for manual interaction with waste and improve hygiene. The authors proposed that such systems could be useful in homes, offices, hospitals, and other environments.",
+       "limitations":"The paper does not report large-scale testing or detailed quantitative performance measurements. The system mainly relies on user voice commands for navigation, while autonomous path planning and automatic waste segregation are left as future work."
+     }},
+
+    {"id":"n2","owner":"m3","title":"Smart Dustbin: An Efficient Garbage Management Approach for a Healthy Society","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A self-moving dustbin that moves to a predefined collection point when full and notifies the collection vehicle via a web app.",
+     "relevance":"Shows autonomous movement on a pre-taught path — BinGo instead reacts to people in real time.",
+     "writeup":{
+       "objective":"To develop a smart and self-moving dustbin that can detect when it is full, automatically move to a predefined garbage collection point, and notify the garbage collection vehicle about its location and status.",
+       "methods":"The system uses a Raspberry Pi Zero W, ultrasonic sensors, DC geared motors, and an L293D motor driver. One ultrasonic sensor detects the garbage level, while another detects obstacles during movement. When the garbage reaches a threshold, the dustbin follows a pre-learned path to the collection point. A web application using Google Maps API shows the locations and status of bins that need collection.",
+       "results":"The proposed system enables the dustbin to move automatically to the collection point when it reaches the specified garbage level and return to its original position after being emptied. The system also identifies which bins need collection, helping the garbage collection vehicle manage its time and potentially reduce fuel consumption.",
+       "conclusions":"The study shows that smart, sensor-based dustbins can reduce manual intervention in waste collection and help prevent garbage overflow. The system can be applied in places such as shopping malls, residential complexes, hospitals, and laboratories, particularly where manual waste collection requires significant effort or involves health risks.",
+       "limitations":"The dustbin follows a predefined path that must initially be taught by the owner, and a new path must be programmed if the route changes. The system also depends on ultrasonic sensors for garbage-level and obstacle detection. The paper does not provide detailed quantitative performance results such as detection accuracy, navigation success rate, or long-term testing."
+     }},
+
+    {"id":"n3","owner":"m3","title":"BinBot: Revolutionizing Waste Management with Robotic Automation","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"An autonomous indoor waste management system combining a LiDAR-guided rover, waste segregation, and IoT monitoring.",
+     "relevance":"Full-stack waste robot with segregation — BinGo focuses narrowly on the social approach and request detection.",
+     "writeup":{
+       "objective":"To develop an autonomous indoor waste management system that combines robotic waste collection, transportation, waste segregation, and IoT-based monitoring, particularly for hygiene-sensitive environments such as hospitals, old-age homes, offices, and residential complexes.",
+       "methods":"The system uses a Raspberry Pi 4B-based robotic rover equipped with LiDAR, IMU, proximity sensors, a load cell, DC motors, and a camera. LiDAR and IMU are used for indoor navigation and obstacle avoidance, while the proximity sensor helps with docking. After waste transfer, a moisture sensor separates waste into wet and dry categories. The system also uses Node.js, MongoDB, MQTT, React.js, and React Native for communication, monitoring, and user control.",
+       "results":"The prototype was tested in residential and institutional corridors. The experiments demonstrated reliable navigation, obstacle avoidance, docking, waste transfer, and wet/dry waste segregation. The mobile application also provided real-time monitoring of the rover and dustbin status.",
+       "conclusions":"The study demonstrates an integrated approach to waste management by combining robotics, sensors, waste segregation, and IoT communication in one system. The authors conclude that BinBot can support hygienic waste management in indoor environments and could be extended to larger smart-city applications.",
+       "limitations":"The current prototype only performs binary wet/dry segregation, so it cannot distinguish specific recyclable materials such as plastic, metal, and glass. It is also designed mainly for single-rover indoor environments, has limited battery runtime, and requires further development for multi-rover coordination, outdoor/industrial use, and AI-based multi-class waste classification."
+     }},
+
+    {"id":"n4","owner":"m3","title":"Framework of Automated Robotic Dustbin (ARD) for Garbage Collection in Smart Cities with Priority Scheduling Approach","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A framework for robotic dustbins with GPS monitoring, waste segregation, and priority-based collection scheduling for smart cities.",
+     "relevance":"Focuses on scheduling and city-scale infrastructure — BinGo operates at a single-user, single-request scale.",
+     "writeup":{
+       "objective":"To propose an Automated Robotic Dustbin (ARD) framework for improving garbage collection in smart cities by reducing manual work, monitoring garbage levels and locations, segregating waste, and using fixed and priority-based scheduling to make collection more time- and fuel-efficient.",
+       "methods":"The proposed ARD uses GPS, Wi-Fi, and four sensors to detect garbage on the ground, classify waste as dry or biodegradable, monitor the garbage level, and track the robot's location. The system has three layers: Server Layer, Smart Dustbin Layer, and Client Layer. When the garbage level reaches a predefined threshold (e.g., 98%), the ARD moves to a predefined dropping point and returns for another collection cycle. Two scheduling approaches are proposed: Fixed Scheduling using a fixed collection interval and Priority Scheduling, where areas are assigned priorities and collected at different intervals.",
+       "results":"The paper presents a framework rather than an implemented experimental prototype, so quantitative performance results are not reported. The proposed priority scheduling assigns different collection intervals based on area priority—for example, hospitals are assigned a higher priority and shorter collection intervals than offices, societies, and college/school campuses. The authors state that the approach can reduce collection time, fuel usage, and manual intervention.",
+       "conclusions":"The proposed ARD framework combines robotic garbage collection, waste segregation, GPS monitoring, IoT connectivity, and scheduling algorithms to improve garbage management. The authors conclude that fixed and priority scheduling can provide flexibility in garbage collection while reducing the need for workers to directly handle waste.",
+       "limitations":"The main limitation is that the paper describes a proposed framework and future implementation, rather than providing experimental validation. The authors also note that the system requires supporting infrastructure for implementation. Sensor-based garbage detection and segregation may require maintenance, particularly because sensors and cables inside the dustbin can be affected by wet waste. The paper also does not provide detailed accuracy, navigation performance, or real-world testing results."
+     }},
+
+    {"id":"n5","owner":"m3","title":"Intelligent Route Planning for Autonomous Service Robots using Communicating Smart Dustbins","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"Uses smart dustbins that communicate fill levels to a robot, which then plans efficient collection routes via Knapsack + TSP.",
+     "relevance":"Route optimization for a collection robot — BinGo instead reacts to one user at a time.",
+     "writeup":{
+       "objective":"To improve the efficiency of autonomous waste collection robots by using smart dustbins that communicate their garbage filling levels. The goal is to reduce unnecessary trips, energy consumption, and unused robot capacity during garbage collection.",
+       "methods":"The system uses the MURMEL autonomous waste collection robot together with smart dustbins equipped with filling-level sensors and LoRaWAN communication. The dustbins send their filling information to a central planning system. A route-planning algorithm combines a Knapsack algorithm to select dustbins according to their filling levels and the robot's capacity, and a Travelling Salesman Problem (TSP) solver to determine the shortest route. The system was evaluated using a SUMO simulation of 52 dustbins in an urban park.",
+       "results":"Compared with route planning without filling-level communication, the proposed approach: reduced total travel distance by 13.12%; reduced the number of trips from 17 to 12 (29.41% reduction); increased robot capacity utilization from 68.53% to 97.08% (41.67% improvement); reduced energy consumption from 1.84 kWh to 1.60 kWh (13.12% reduction). The simulation showed that knowing which dustbins are empty or nearly full helped the robot avoid unnecessary visits and use its collection capacity more effectively.",
+       "conclusions":"The study demonstrates that communication between smart dustbins and autonomous waste collection robots can improve route planning and resource utilization. The proposed combination of smart-bin filling information, Knapsack-based selection, and TSP-based routing can help reduce travel distance and energy consumption while improving the use of the robot's waste capacity.",
+       "limitations":"The evaluation was based on a simulation of 52 dustbins in an urban park, rather than a large-scale real-world deployment. The energy model considers mainly the robot's traction energy and neglects communication energy because its contribution was considered minor. The authors also identify the need to consider dynamic environments, such as a moving mothership, in future route planning."
+     }},
+
+    {"id":"n6","owner":"m3","title":"Modelling and Simulation of Autonomous Indoor Robotic Wastebin in Webots for Waste Management in Smart Buildings","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A Webots-simulated line-following robotic wastebin that navigates to a collection point and coordinates with a second bin.",
+     "relevance":"Simulation-only study with line-following — BinGo targets real-world, person-following behavior.",
+     "writeup":{
+       "objective":"To develop and simulate an autonomous indoor robotic waste bin that can automatically move to a common waste collection point when it becomes full. The system is designed to reduce human effort, time, and cost while improving waste collection and management in smart buildings.",
+       "methods":"The proposed system is modeled and simulated using the Webots virtual simulator. A line-following navigation technique is used to guide the robotic bin along a predefined path. Infrared sensors detect the line, while color sensors are used at junctions to select the appropriate direction. Distance or ultrasonic sensors are used to detect and avoid obstacles. The robot is modeled as a four-wheeled skid-steer mobile robot with motors, sensors, an Arduino Mega controller, and a NodeMCU for communication. Two robotic bins are simulated, where the first bin travels to the collection point and communicates with the second bin through an emitter-receiver system. The Webots environment contains walls, static obstacles, a dynamic obstacle, and predefined paths.",
+       "results":"The simulation showed that the robotic bin could successfully follow the predefined line and navigate toward the collection point while avoiding both static and dynamic obstacles. When the first bin reached the collection point, it sent a signal to the second bin, which then followed the same path toward the first bin's original position. The study also found that the IR-based distance sensor provided better accuracy and faster response than the color sensor tested during the simulation.",
+       "conclusions":"The study concludes that an autonomous robotic waste bin using line-following navigation can be successfully modeled and simulated in Webots. The proposed system can navigate to a common collection point, avoid obstacles, and communicate with another robotic bin for replacement. The authors suggest that this approach could be used for smarter and more efficient waste collection in indoor smart-building environments.",
+       "limitations":"The main limitation of this study is that the system was evaluated only through simulation and no physical prototype or real-world experimental testing was performed. The robot depends on a predefined line-following path, which limits its navigation flexibility. The color sensor also showed low accuracy and was affected by lighting and shadows. In addition, the system was tested in a controlled Webots environment, so its performance in real indoor environments has not yet been demonstrated. The authors identified real-world implementation and testing as future work."
+     }},
+
+    {"id":"n7","owner":"m3","title":"Automated Indoor Waste Management System Employing Wavefront Algorithm and Received Signal Strength Indicator Values-based Mobile Robot","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A mobile robot that locates full dustbins via Zigbee RSSI, plans paths with the Wavefront algorithm, and empties bins using a robotic arm.",
+     "relevance":"RSSI-based localization and grid planning — BinGo uses vision and pose detection to find the requester.",
+     "writeup":{
+       "objective":"To develop an automated indoor waste management system that reduces the need for manual waste collection. The system uses smart dustbins that can detect when they are full and send information to a mobile robot. The robot then identifies the location of the full dustbin and automatically moves toward it to collect and empty the waste.",
+       "methods":"The proposed system consists of three main parts: a smart dustbin, a mobile waste-collecting robot, and a tracking algorithm. The smart dustbin uses two HC-SR04 ultrasonic sensors to detect the amount of waste inside the bin. An Arduino Nano processes the sensor information and sends the status of the dustbin to the robot through Zigbee S2 wireless modules. When a bin becomes full, the robot uses the Received Signal Strength Indicator (RSSI) value to estimate which dustbin is nearby and locate it. For navigation, the Wavefront or Brushfire algorithm creates an X-Y grid of the indoor environment, where walls and obstacles are treated as blocked areas. Infrared sensors are used to detect obstacles and update the robot's map. The robot also contains a robotic arm with servo motors and electromagnets to grip, lift, tilt, and empty the dustbin into its storage box. The system was tested using a 6×6 grid, with each cell measuring 2×2 feet, to evaluate the robot's navigation and shortest-path movement.",
+       "results":"The experiments showed that Zigbee provided more stable RSSI values compared with Wi-Fi, making it more suitable for locating the full dustbins. In the 6×6 grid test, the robot was able to find the shortest path to the target location in about 10 seconds. The system also demonstrated relatively low power consumption because the different actuators were not required to operate simultaneously. The smart dustbin required an Arduino Nano, Zigbee module, and ultrasonic sensors, while the mobile robot used various motors, servos, and an electromagnet for waste collection.",
+       "conclusions":"The paper concludes that the proposed system can automate indoor waste collection and reduce manual effort, time, and direct human involvement. By combining ultrasonic sensors, Zigbee communication, RSSI-based localization, the Wavefront algorithm, and a mobile robot, the system can detect, locate, collect, and transport waste from full dustbins. The authors also suggest that the system could be further developed for outdoor waste collection, waste segregation, GPS-based localization, image processing, machine learning, and solar-powered operation.",
+       "limitations":"The proposed system was tested using a miniature robot and a 6×6 grid rather than a full-scale real indoor environment. The Wavefront algorithm mainly considers 90-degree turns, although the authors mention that 45-degree turns could improve accuracy. RSSI-based localization can also be affected by the indoor environment, and the system depends on Zigbee communication between the dustbins and robot. The authors propose several future improvements, including waste segregation using visual and touch sensors, metal detectors, image processing, and machine learning."
+     }},
+
+    {"id":"n8","owner":"m3","title":"Robotic Dustbin on Wheels","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A line-following robotic dustbin that stops at checkpoints, monitors fill level, and notifies the corporation via Wi-Fi.",
+     "relevance":"Line-following with IoT notification — BinGo instead uses camera-based request detection.",
+     "writeup":{
+       "objective":"To develop a robotic dustbin that can move autonomously along a predefined path and collect waste at different checkpoints. The system is designed to improve cleanliness by bringing the dustbin to users and reducing the need for manual movement of waste bins. It also monitors the waste level and sends a notification to the corporation when the dustbin becomes full.",
+       "methods":"The proposed robotic dustbin uses an ATmega 32P Arduino controller, an L293D motor driver, four motors, IR sensors, an ultrasonic sensor, and a Wi-Fi module. The IR sensors help the robot follow a lined path and detect obstacles, while the ultrasonic sensor measures the amount of waste inside the dustbin. When the bin becomes full, the controller sends the information through the Wi-Fi module, and the bin status is updated on a webpage. A buzzer is also used to indicate when the robot stops at a checkpoint. The robot follows a predefined path and can move forward, left, or right according to the signals received from the controller. If the dustbin is full, it waits until the waste is emptied and then continues its movement.",
+       "results":"The complete robotic dustbin system was developed and tested successfully. The hardware components were integrated and their operation was verified. The robot was able to move along the lined path using IR sensors and stop when an obstacle was detected. The ultrasonic sensor successfully monitored the waste level inside the dustbin. When the bin became full, a notification was sent to the corporation operators, and the full or empty status of the dustbin was displayed on a webpage through the Wi-Fi module.",
+       "conclusions":"The paper concludes that the proposed robotic dustbin can support smarter and more hygienic waste management by combining mobility, waste-level monitoring, and IoT-based notification. The system can be used in different environments such as residential areas, gated communities, parks, gardens, sanctuaries, and zoos. The authors suggest that future work could focus on developing a system that can provide immediate cleaning or emptying of the dustbin to further reduce waste accumulation and littering.",
+       "limitations":"The robot mainly follows a predefined lined path, so its movement depends on the available path rather than dynamically planning routes in an indoor environment. The system detects obstacles and stops, but the paper does not describe advanced obstacle avoidance or dynamic path planning. The system also requires the dustbin to be emptied after it becomes full before continuing normal operation. In addition, the paper does not provide detailed quantitative performance measurements such as navigation accuracy, travel time, localization accuracy, or power consumption."
+     }},
+
+    {"id":"n9","owner":"m3","title":"Smart E-dustbin","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"An IoT movable dustbin that follows a line or predefined path, detects obstacles, and emails when full.",
+     "relevance":"Similar IoT notification approach, but no social interaction or autonomous person-seeking.",
+     "writeup":{
+       "objective":"To develop a smart and movable dustbin that can improve waste management using IoT technology. The system is designed to move along a predefined path or follow a line, detect obstacles, monitor the garbage level, and automatically send a notification when the dustbin becomes full. It aims to reduce manual monitoring and help maintain cleanliness in public places, educational institutions, offices, hospitals, parks, and other large areas.",
+       "methods":"The proposed system uses an Arduino Uno as the main controller and an ESP8266 Wi-Fi module for wireless communication. An ultrasonic sensor is placed at the top of the dustbin to measure the garbage level, while a proximity/IR sensor detects obstacles in front of the moving dustbin. The movement of the dustbin is controlled using an L293D motor driver and motors. The dustbin can operate either by following a line or by moving along a predefined programmed path. A 16×2 LCD displays the current status and instructions to users. When the garbage level reaches the defined limit, the system sends the dustbin status through Wi-Fi to a web server and generates an email notification for the responsible authority. The system also includes a battery-powered setup and a power-down mode for the ESP8266 to reduce energy consumption.",
+       "results":"The developed Smart E-dustbin was successfully tested with its sensors, motors, Wi-Fi communication, and web-based monitoring system. The system was able to move using either a line-following mode or a predefined path, detect obstacles, and stop when an obstacle was detected. The ultrasonic sensor successfully monitored the garbage level, and when the bin became full, the system displayed the status on the LCD and transmitted the information through the ESP8266 Wi-Fi module. The paper also reports that a one-day pilot test in the Andheri area of Mumbai showed an average reduction of 33% in food waste.",
+       "conclusions":"The paper concludes that the Smart E-dustbin can provide a more automated and user-friendly approach to waste management. By combining a movable dustbin, sensors, Arduino, Wi-Fi communication, and web-based monitoring, the system can reduce the need for continuous manual monitoring. The authors suggest that the system can be useful in public places, educational institutions, corporate areas, hospitals, gardens, and parks.",
+       "limitations":"The implemented system was mainly developed and tested for a single dustbin, so large-scale deployment with multiple bins was not fully implemented. The system also depends on a predefined path or line-following mechanism for movement, which can limit flexibility when the environment changes. The paper proposes future improvements such as connecting multiple uniquely identified dustbins through IoT, creating a database, adding GPS for location tracking, separating wet and dry waste, making the system user-free for automatic waste disposal, and making the complete system water-resistant."
+     }},
+
+    {"id":"n10","owner":"m3","title":"Automatic Garbage Collector using Sensors and Internet of Things","authors":"","venue":"","year":"","link":"","hri24":false,
+     "summary":"A line-following robot that replaces a full bin with an empty one, triggered by MQTT messages from a smart bin.",
+     "relevance":"Bin replacement via electromagnets — BinGo focuses on the social interaction, not bin swapping.",
+     "writeup":{
+       "objective":"To develop an automated garbage collection system that can detect when a dustbin is full, automatically send a notification, and collect the filled bin without human intervention. The system aims to reduce manual labor, prevent overflowing garbage bins, improve waste collection efficiency, and support cleaner and smarter cities.",
+       "methods":"The proposed system combines IoT, sensors, and robotics. A smart dustbin uses an ultrasonic sensor to continuously measure the garbage level. When the bin becomes full, ESP32-1 sends the information to ESP32-2 using MQTT communication. ESP32-2 then activates an Arduino-controlled line-following robot. The robot follows a predefined path using sensors and uses another ultrasonic sensor to detect obstacles. When it reaches the full dustbin, a servo motor and electromagnets lift the filled bin and replace it with an empty one. The robot then carries the filled bin to a central disposal area. The main components include ESP32, Arduino, ultrasonic sensors, infrared sensors, MQTT, a line-following mechanism, servo motor, electromagnets, and a buzzer.",
+       "results":"The proposed system successfully detected the garbage level and automatically communicated the filled-bin status using MQTT. The ESP32-2 successfully activated the Arduino-controlled line-following robot, which moved toward the filled bin. The servo motor and electromagnets successfully lifted the filled bin and replaced it with an empty bin. The robot then transported the filled bin to the central disposal area. The obstacle-detection system also worked effectively. Compared with the existing system, the proposed system reduced the response time from 10 seconds to 5 seconds and increased the automation level from manual to fully automatic. However, network latency in MQTT communication and robot alignment problems were observed during testing.",
+       "conclusions":"The paper concludes that the Automatic Garbage Collector can provide an efficient and automated solution for waste management. By combining IoT communication, ultrasonic sensors, a line-following robot, a servo motor, and electromagnets, the system can detect, collect, replace, and transport filled garbage bins with minimal human involvement. The system can reduce labor requirements, prevent garbage overflow, and improve cleanliness. The authors also suggest future improvements such as mobile-app monitoring, better obstacle avoidance, solar power, and AI-based predictive maintenance.",
+       "limitations":"The system has some limitations, including MQTT network latency and alignment problems while the robot is collecting and replacing the dustbin. The accuracy of the system can depend on the placement and performance of the sensors. The robot also follows a predefined path, which limits its flexibility in complex environments. The current system requires proper communication between ESP32 devices and depends on electrical power. The authors suggest improving obstacle avoidance, servo motor precision, communication reliability, and adding solar power and AI-based predictive maintenance in future work."
+     }}
+  ],
+  "components": [
+    {"g":"Brain and vision","name":"Raspberry Pi 4 Model B (4 GB)","qty":1,"price":12500,"checked":true},
+    {"g":"Brain and vision","name":"Raspberry Pi Camera Module 3","qty":1,"price":6880,"checked":true},
+    {"g":"Brain and vision","name":"MicroSD card, 32 GB Class 10","qty":1,"price":500},
+    {"g":"Brain and vision","name":"Pi 4 case with heatsink and fan","qty":1,"price":700},
+    {"g":"Brain and vision","name":"ESP32 DevKit V1","qty":1,"price":490,"checked":true},
+    {"g":"Brain and vision","name":"Micro USB cable (Pi to ESP32)","qty":1,"price":100},
+    {"g":"Movement","name":"4WD robot chassis kit with motors and wheels","qty":1,"price":1149,"checked":true},
+    {"g":"Movement","name":"TB6612FNG motor driver","qty":2,"price":300},
+    {"g":"Movement","name":"HC-SR04 ultrasonic sensor (3 obstacle, 1 fill level)","qty":4,"price":120},
+    {"g":"Movement","name":"MPU6050 gyro module","qty":1,"price":220},
+    {"g":"Bin and lid","name":"Plastic dustbin with flip lid, 10 to 15 L","qty":1,"price":400},
+    {"g":"Bin and lid","name":"MG996R metal gear servo (180 degree type)","qty":1,"price":390,"checked":true},
+    {"g":"Bin and lid","name":"IR obstacle sensor","qty":1,"price":70},
+    {"g":"Voice and expression","name":"PAM8403 amplifier board","qty":1,"price":80},
+    {"g":"Voice and expression","name":"3W 4 ohm speaker","qty":1,"price":120},
+    {"g":"Voice and expression","name":"3.5 mm audio cable","qty":1,"price":80},
+    {"g":"Voice and expression","name":"0.96 inch OLED display (I2C)","qty":1,"price":350},
+    {"g":"Voice and expression","name":"WS2812 LED ring (optional)","qty":1,"price":350},
+    {"g":"Power","name":"18650 lithium cell, 2500 mAh or more","qty":3,"price":350},
+    {"g":"Power","name":"3S battery holder","qty":1,"price":120},
+    {"g":"Power","name":"3S BMS protection board","qty":1,"price":200},
+    {"g":"Power","name":"XL4015 5A buck converter (5 V for the Pi)","qty":1,"price":242,"checked":true},
+    {"g":"Power","name":"LM2596 buck converter (5 V logic, 6 V servo)","qty":2,"price":120},
+    {"g":"Power","name":"USB Type C cable","qty":1,"price":150},
+    {"g":"Power","name":"Rocker switch","qty":1,"price":30},
+    {"g":"Power","name":"18650 charger","qty":1,"price":400},
+    {"g":"Power","name":"Battery voltmeter display (optional)","qty":1,"price":120},
+    {"g":"Building materials","name":"Acrylic sheet or 5 mm plywood base","qty":1,"price":400},
+    {"g":"Building materials","name":"Jumper wire packs (M-M, M-F, F-F)","qty":3,"price":100},
+    {"g":"Building materials","name":"Dotted PCB board","qty":1,"price":60},
+    {"g":"Building materials","name":"M3 screws, nuts and standoffs","qty":1,"price":200},
+    {"g":"Building materials","name":"Zip ties, foam tape, glue sticks","qty":1,"price":250},
+    {"g":"Building materials","name":"Heat shrink and 18 AWG wire","qty":1,"price":200}
+  ]
+}
+</script>
+
+<script id="bingo-js">
+(function(){
+  var FONTS = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap";
+  var STATE = JSON.parse(document.getElementById("bingo-state").textContent);
+  var DRAFT = null;
+  var editing = false, dirty = false, saving = false, readOnly = false;
+  var ART = null;
+  var openPaperId = null; // which paper's write-up modal is open
+  var PAGES = [
+    ["home","Home"],["team","Team"],["research","Research"],["system","How it works"],
+    ["literature","Literature"],["hardware","Hardware and cost"],["updates","Weekly updates"]
+  ];
+  var app = document.getElementById("app");
+
+  function S(){ return editing ? DRAFT : STATE; }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  function safeUrl(u){ u = String(u || "").trim(); return /^https?:\/\//i.test(u) ? u : ""; }
+  function uid(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  function taka(n){ return "৳" + Number(n).toLocaleString("en-IN"); }
+  function lines(t){ return String(t || "").split("\n").map(function(x){ return x.trim(); }).filter(Boolean); }
+  function current(){ var h = (location.hash || "").replace("#",""); for (var i=0;i<PAGES.length;i++){ if (PAGES[i][0] === h) return h; } return "home"; }
+  function memberName(m, i){ return m.name ? m.name : "Member " + (i + 1); }
+  function total(){ return S().components.reduce(function(a,c){ return a + c.qty * c.price; }, 0); }
+  function fmtDate(d){ if (!d) return ""; var t = new Date(d + "T00:00:00"); if (isNaN(t)) return esc(d); return t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+  function findPaper(id){ return S().papers.find(function(p){ return p.id === id; }); }
+  function hasWriteup(p){ return p.writeup && (p.writeup.objective || p.writeup.methods || p.writeup.results || p.writeup.conclusions || p.writeup.limitations); }
+
+  function robot(){
+    return '<svg viewBox="0 0 320 340" role="img" aria-label="Drawing of BinGo: a green dustbin on a four wheel robot base, with a yellow lid lifting open, a small camera and two glowing eyes on a screen">' +
+      '<ellipse class="r-shadow" cx="160" cy="326" rx="130" ry="10"/>' +
+      '<line class="r-motion" x1="8" y1="262" x2="30" y2="262"/><line class="r-motion" x1="0" y1="282" x2="26" y2="282"/>' +
+      '<rect class="r-chassis" x="40" y="248" width="240" height="44" rx="10"/>' +
+      '<circle class="r-wheel" cx="84" cy="298" r="26"/><circle class="r-hub" cx="84" cy="298" r="8"/>' +
+      '<circle class="r-wheel" cx="236" cy="298" r="26"/><circle class="r-hub" cx="236" cy="298" r="8"/>' +
+      '<path class="r-body" d="M68 250 L252 250 L238 96 L82 96 Z"/>' +
+      '<line class="r-rib" x1="104" y1="200" x2="100" y2="240"/><line class="r-rib" x1="160" y1="200" x2="160" y2="240"/><line class="r-rib" x1="216" y1="200" x2="220" y2="240"/>' +
+      '<g transform="rotate(-16 82 96)"><rect class="r-lid" x="76" y="80" width="172" height="16" rx="6"/></g><circle class="r-chassis" cx="84" cy="94" r="5"/>' +
+      '<circle class="r-cam" cx="160" cy="116" r="8"/><circle class="r-cam-ring" cx="160" cy="116" r="4"/>' +
+      '<rect class="r-screen" x="108" y="134" width="104" height="56" rx="12"/>' +
+      '<rect class="r-eye" x="132" y="148" width="14" height="26" rx="7"/><rect class="r-eye" x="174" y="148" width="14" height="26" rx="7"/>' +
+      '<g transform="rotate(28 262 40)"><path class="r-cup" d="M246 18 L278 18 L272 62 L252 62 Z"/><rect class="r-cup-band" x="249" y="34" width="26" height="9"/></g>' +
+    '</svg>';
+  }
+  function markSvg(){
+    return '<svg class="brand-mark" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="21" width="24" height="5" rx="2" fill="var(--ink)"/><path d="M6 21 L24 21 L22.5 8 L7.5 8 Z" fill="var(--green)"/><rect x="5" y="4" width="20" height="3.5" rx="1.5" fill="var(--yellow)" transform="rotate(-14 5 6)"/><rect x="11" y="12" width="2.4" height="4.5" rx="1.2" fill="var(--eye)"/><rect x="16.6" y="12" width="2.4" height="4.5" rx="1.2" fill="var(--eye)"/></svg>';
+  }
+
+  function header(){
+    var cur = current();
+    var nav = PAGES.map(function(p){ return '<a href="#' + p[0] + '"' + (p[0] === cur ? ' aria-current="page"' : '') + '>' + esc(p[1]) + '</a>'; }).join("");
+    var edit = (ART && !readOnly && !editing) ? '<button class="edit-toggle" id="edit-start" type="button">Edit site</button>' : '';
+    return '<header class="top"><div class="wrap top-row"><a class="brand" href="#home">' + markSvg() + '<span class="brand-name">Bin<span>Go</span></span></a><nav class="nav" aria-label="Pages">' + nav + '</nav>' + edit + '</div></header>';
+  }
+
+  function latestUpdate(){
+    var u = S().updates.slice().sort(function(a,b){ return (b.date || "").localeCompare(a.date || ""); });
+    return u[0];
+  }
+
+  function socialIcon(type){
+    var icons = {
+      linkedin: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+      github: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>',
+      researchgate: '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.586 0c-.818 0-1.508.19-2.073.565-.563.377-.843.983-.843 1.801v.9h-.27c-.378 0-.656.066-.83.197a.646.646 0 0 0-.263.565c0 .234.1.415.3.546.2.13.494.196.88.196h.185v9.892c0 .925-.198 1.61-.596 2.057-.397.445-.996.668-1.795.668-.8 0-1.391-.223-1.777-.668-.386-.447-.579-1.132-.579-2.057V4.766c0-1.28-.463-2.154-1.39-2.622C10.807 1.717 9.938 1.5 8.73 1.5c-1.21 0-2.093.228-2.646.682-.553.455-.83 1.283-.83 2.484v8.996c0 .688-.166 1.208-.497 1.558-.331.35-.773.525-1.328.525-.53 0-.98-.177-1.35-.531-.37-.354-.556-.876-.556-1.564V4.999H.84a.855.855 0 0 1-.541-.184C.176 4.704 0 4.523 0 4.329c0-.24.175-.434.525-.582C.875 3.6 1.364 3.5 1.995 3.5h.482v-.836c0-.846.302-1.492.905-1.937C3.987.28 4.787.058 5.78.058c.99 0 1.755.217 2.293.65.538.434.807 1.066.807 1.895v8.013c0 .83.157 1.444.472 1.841.315.397.758.596 1.327.596.57 0 1.015-.199 1.337-.596.322-.397.483-1.01.483-1.84V4.35c0-1.42.48-2.454 1.44-3.1C14.9.604 16.08.28 17.468.28c1.386 0 2.385.267 2.997.8.612.534.918 1.353.918 2.456v1.2h.204c.586 0 1.025.066 1.318.196.292.131.438.317.438.556 0 .216-.17.41-.512.582-.342.17-.845.256-1.51.256h-.348v9.995c0 1.254-.424 2.22-1.271 2.897-.848.678-2.02 1.017-3.512 1.017-1.49 0-2.65-.328-3.475-.982-.826-.654-1.24-1.597-1.24-2.827v-2.042c0-.152.07-.292.211-.418.14-.127.317-.19.528-.19.21 0 .387.063.528.19.14.126.211.266.211.418v2.042c0 .774.266 1.367.8 1.778.532.411 1.286.617 2.263.617.975 0 1.73-.206 2.27-.617.539-.411.808-1.004.808-1.778V4.766c0-.658.164-1.155.492-1.492.329-.338.798-.507 1.41-.507.611 0 1.078.169 1.4.507.323.337.484.834.484 1.492v9.995c0 .798-.198 1.428-.594 1.888-.396.46-1.02.69-1.87.69-.63 0-1.142-.174-1.536-.522-.394-.348-.591-.835-.591-1.46V4.766h-.016z"/></svg>'
+    };
+    return icons[type] || '';
+  }
+
+  function pageHome(){
+    var st = S();
+    var team = st.teamNo ? "Team " + esc(st.teamNo) + " · " : "";
+    var lu = latestUpdate();
+    var luHtml = lu ? '<div class="panel"><span class="eyebrow">Latest update · ' + esc(lu.week) + '</span><ul class="clean">' + lines(lu.done).slice(0,4).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + '</ul><a href="#updates">All weekly updates</a></div>' : '';
+    return '<section class="page">' +
+      '<div class="hero"><div class="hero-copy"><span class="eyebrow">' + team + 'Creative Social Robot and Application</span>' +
+      '<h1>Bin<span>Go</span></h1>' +
+      '<p class="hero-lead">A dustbin that comes to you. BinGo watches for someone holding up a cup or a wrapper, drives over, stops at arm’s length and opens its lid.</p>' +
+      '<div class="btns"><a class="btn primary" href="#research">Read the research plan</a><a class="btn" href="#system">See how it works</a></div></div>' +
+      '<div class="hero-art">' + robot() + '</div></div>' +
+      '<div class="hud" aria-label="Key specifications">' +
+        '<div><span class="eyebrow">Brain</span><b>Raspberry Pi 4 + ESP32</b></div>' +
+        '<div><span class="eyebrow">Vision</span><b>MediaPipe Pose</b></div>' +
+        '<div><span class="eyebrow">Stop distance (target)</span><b>0.8 m</b></div>' +
+        '<div><span class="eyebrow">Lid</span><b>MG996R, 0 to 90°</b></div>' +
+        '<div><span class="eyebrow">Parts estimate</span><b>' + taka(total()) + '</b></div>' +
+      '</div>' +
+      '<div class="two"><div class="prose"><h2>Why a bin that moves</h2>' +
+        '<p>In a busy university cafeteria, cups and wrappers often end up left on tables even when a bin is a few metres away. Most people are happy to use a bin. It just isn’t next to them at the moment they finish eating, so the rubbish stays behind and cleaners collect it later.</p>' +
+        '<p>BinGo turns this around. Instead of asking people to walk to the bin, the bin notices who wants it and goes to them. A raised hand is enough. When the rubbish drops in, BinGo says <em>Dhonnobad!</em> and moves on.</p></div>' + luHtml + '</div>' +
+    '</section>';
+  }
+
+  function pageTeam(){
+    var st = S();
+    var cards = st.members.map(function(m,i){
+      var nm = memberName(m,i);
+      if (editing){
+        return '<div class="member"><div class="field"><label for="m-' + m.id + '-name">Name</label><input type="text" id="m-' + m.id + '-name" data-coll="members" data-id="' + m.id + '" data-field="name" value="' + esc(m.name) + '" placeholder="Full name"></div>' +
+          '<div class="field"><label for="m-' + m.id + '-sid">Student ID</label><input type="text" id="m-' + m.id + '-sid" data-coll="members" data-id="' + m.id + '" data-field="sid" value="' + esc(m.sid) + '"></div>' +
+          '<div class="field"><label for="m-' + m.id + '-intro">Short intro</label><textarea id="m-' + m.id + '-intro" data-coll="members" data-id="' + m.id + '" data-field="intro">' + esc(m.intro || "") + '</textarea></div>' +
+          '<div class="field"><label for="m-' + m.id + '-leader">Leader</label><select id="m-' + m.id + '-leader" data-coll="members" data-id="' + m.id + '" data-field="leader"><option value=""' + (m.leader ? '' : ' selected') + '>Not a leader</option><option value="1"' + (m.leader === "1" ? ' selected' : '') + '>Leader 1</option><option value="2"' + (m.leader === "2" ? ' selected' : '') + '>Leader 2</option></select></div>' +
+          '<div class="field"><label for="m-' + m.id + '-role">Responsibility</label><textarea id="m-' + m.id + '-role" data-coll="members" data-id="' + m.id + '" data-field="role">' + esc(m.role) + '</textarea></div>' +
+          '<div class="field"><label for="m-' + m.id + '-linkedin">LinkedIn</label><input type="url" id="m-' + m.id + '-linkedin" data-coll="members" data-id="' + m.id + '" data-field="linkedin" value="' + esc(m.linkedin || "") + '" placeholder="https://linkedin.com/in/..."></div>' +
+          '<div class="field"><label for="m-' + m.id + '-github">GitHub</label><input type="url" id="m-' + m.id + '-github" data-coll="members" data-id="' + m.id + '" data-field="github" value="' + esc(m.github || "") + '" placeholder="https://github.com/..."></div>' +
+          '<div class="field"><label for="m-' + m.id + '-researchgate">ResearchGate</label><input type="url" id="m-' + m.id + '-researchgate" data-coll="members" data-id="' + m.id + '" data-field="researchgate" value="' + esc(m.researchgate || "") + '" placeholder="https://researchgate.net/profile/..."></div>' +
+          '<button class="btn small danger" type="button" data-remove="members" data-id="' + m.id + '">Remove member</button></div>';
+      }
+      var links = '';
+      if (m.linkedin) links += '<a href="' + esc(m.linkedin) + '" target="_blank" rel="noopener" title="LinkedIn"><span class="dot li"></span>' + socialIcon('linkedin') + '</a>';
+      if (m.github) links += '<a href="' + esc(m.github) + '" target="_blank" rel="noopener" title="GitHub"><span class="dot gh"></span>' + socialIcon('github') + '</a>';
+      if (m.researchgate) links += '<a href="' + esc(m.researchgate) + '" target="_blank" rel="noopener" title="ResearchGate"><span class="dot rg"></span>' + socialIcon('researchgate') + '</a>';
+      var socialHtml = links ? '<div class="socials">' + links + '</div>' : '';
+      return '<div class="member"><div class="avatar" aria-hidden="true">' + esc(nm.trim().charAt(0).toUpperCase() || "M") + '</div>' +
+        (m.leader ? '<span class="badge">Leader ' + esc(m.leader) + '</span>' : '') +
+        '<div class="member-name">' + esc(nm) + '</div>' +
+        (m.sid ? '<div class="mono muted">' + esc(m.sid) + '</div>' : '') +
+        '<div class="member-role">' + esc(m.role) + '</div>' +
+        (m.intro ? '<div class="muted" style="font-size:.92rem;margin-top:4px">' + esc(m.intro) + '</div>' : '') +
+        socialHtml + '</div>';
+    }).join("");
+    var teamNo = editing
+      ? '<div class="field" style="max-width:220px"><label for="team-no">Team number</label><input type="text" id="team-no" data-coll="team" data-field="teamNo" value="' + esc(st.teamNo) + '" placeholder="e.g. 07"></div>'
+      : '<span class="team-no">Team ' + (st.teamNo ? esc(st.teamNo) : "no. to be added") + '</span>';
+    var add = editing ? '<div><button class="btn small" type="button" id="add-member">Add member</button></div>' : '';
+    return '<section class="page"><div class="page-head"><span class="eyebrow">Team</span><h2>Who builds BinGo</h2><p>Two leaders run the project, keep the team on schedule and give the weekly update in class. Every member owns one part of the build.</p></div>' +
+      '<div class="team-bar">' + teamNo + '</div><div class="members">' + cards + '</div>' + add + '</section>';
+  }
+
+  function pageResearch(){
+    return '<section class="page">' +
+      '<div class="page-head"><span class="eyebrow">Research plan · draft</span><h2>Objective, gap and questions</h2><p>This is our working draft for weeks 1 and 2. It will change as the literature review grows.</p></div>' +
+      '<div class="prose"><span class="eyebrow">Objective</span><p class="objective">Design and build a low-cost autonomous dustbin robot that recognises when a nearby person wants to throw something away, drives to that person, stops at a comfortable distance and opens its lid, then test it with students in a real campus space.</p></div>' +
+      '<div class="panel"><h3>Specific objectives</h3><ol class="clean">' +
+        '<li>Detect a “throw request” (a hand raised above the shoulder, usually holding an item) in real time from an onboard camera on a Raspberry Pi 4.</li>' +
+        '<li>Drive to the person who made the request while avoiding chairs, bags and other people with ultrasonic sensors.</li>' +
+        '<li>Stop at a socially comfortable distance, open the lid automatically, detect the rubbish going in and track how full the bin is.</li>' +
+        '<li>Evaluate BinGo in a public space at IUB with student users: detection accuracy, time to reach the person and how people rate the experience.</li>' +
+      '</ol></div>' +
+      '<div class="two"><div class="prose"><h3>Research gap</h3>' +
+        '<p>Robotic trash cans have been studied before. An early one was built on a Roomba base and tested at an on-campus cafe [2]. Later, two trash barrel robots were deployed in public plazas in New York City, and most people welcomed them [1][3].</p>' +
+        '<p>In the New York deployments, though, a hidden researcher drove the robots by remote control. This is called the Wizard of Oz method. The robots never had to decide by themselves who wanted them. These studies tell us a lot about how people react to a moving bin. They say little about how the bin itself can spot a person who wants to throw something away, or whether that works on hardware a student team can afford.</p>' +
+        '<p>The deployments we have found so far were all in the United States. BinGo is built and tested at a university in Dhaka.</p>' +
+        '<p class="muted" style="font-size:.9rem">Numbers in brackets refer to the starter papers on the <a href="#literature">Literature</a> page.</p></div>' +
+      '<div class="panel soft"><h3>What BinGo adds</h3><ul class="clean"><li>The robot decides on its own, using pose estimation instead of a human driver.</li><li>It runs on about ৳29,000 of parts from Dhaka shops.</li><li>It speaks Bangla and shows simple eyes, so people can tell what it is doing.</li><li>It is tested with students in a South Asian campus setting.</li></ul></div></div>' +
+      '<div><span class="eyebrow">Research questions</span>' +
+        '<div class="rq" style="margin-top:12px"><span class="rq-id">RQ1</span><p>How reliably can a pose-estimation model running on a Raspberry Pi 4 tell apart a person who wants to throw something away from people who are just moving around?</p></div>' +
+        '<div class="rq"><span class="rq-id">RQ2</span><p>At what approach speed and stopping distance do students feel comfortable when a bin comes to them?</p></div>' +
+        '<div class="rq"><span class="rq-id">RQ3</span><p>Do simple social cues, animated eyes and a short Bangla voice line, make students more willing to use the bin than when it moves silently?</p></div>' +
+      '</div>' +
+      '<div style="display:grid;gap:14px"><h3>How we will measure it</h3><div class="table-wrap"><table><thead><tr><th>Measure</th><th>How</th><th>Our target</th></tr></thead><tbody>' +
+        '<tr><td>Request detection</td><td>Precision and recall on recorded clips and live trials</td><td class="mono">85% or better</td></tr>' +
+        '<tr><td>Time to reach</td><td>Seconds from raised hand to open lid, person 3 m away</td><td class="mono">under 10 s</td></tr>' +
+        '<tr><td>Stopping distance</td><td>Measured with a tape on the floor</td><td class="mono">0.6 to 1.0 m</td></tr>' +
+        '<tr><td>Collisions</td><td>Count per test session</td><td class="mono">0</td></tr>' +
+        '<tr><td>User rating</td><td>Short survey after use: comfort, usefulness, would use again (5 point scale)</td><td class="mono">20+ students</td></tr>' +
+        '<tr><td>Effect of social cues (RQ3)</td><td>Same test with eyes and voice turned on, then off</td><td class="mono">compare ratings</td></tr>' +
+      '</tbody></table></div></div>' +
+      '<div class="panel note"><h3>Scope for this semester</h3><p>Indoors on flat floors, one request at a time, good lighting. No stairs, no outdoor use and no sorting of recyclables. A 10 to 15 L bin, so BinGo suits a cafeteria corner or corridor, not a whole floor.</p></div>' +
+    '</section>';
+  }
+
+  function pageSystem(){
+    var steps = [
+      ["Watch","The Pi camera streams at about 10 frames per second. MediaPipe Pose finds each person and the positions of their shoulders and wrists."],
+      ["Recognise","A wrist held above the shoulder for about one second counts as a request. Where the person is in the frame tells BinGo which way to turn."],
+      ["Approach","The Pi sends turn and drive commands to the ESP32 over USB serial. Three ultrasonic sensors make it stop or steer around obstacles."],
+      ["Stop and open","BinGo stops at the target distance, judged from the person’s size in the frame and the front ultrasonic sensor. The servo lifts the lid."],
+      ["Confirm","An IR sensor sees the rubbish drop in. The speaker plays “Dhonnobad!” and the lid closes after a few seconds."],
+      ["Report","A sensor under the lid measures the fill level. When the bin is nearly full, the screen says so and BinGo stops taking requests."]
+    ];
+    var flow = steps.map(function(s,i){ return '<div class="step"><span class="step-n">Step ' + (i+1) + '</span><h3>' + s[0] + '</h3><p>' + s[1] + '</p></div>'; }).join("");
+    return '<section class="page">' +
+      '<div class="page-head"><span class="eyebrow">How it works</span><h2>From a raised hand to an open lid</h2><p>BinGo repeats the same six steps for every request.</p></div>' +
+      '<div class="flow">' + flow + '</div>' +
+      '<div style="display:grid;gap:14px"><h3>Two brains, one robot</h3><p class="muted" style="max-width:66ch">The Raspberry Pi does the heavy vision work. The ESP32 handles motors and sensors, so driving stays smooth while the Pi is busy with the camera.</p>' +
+      '<div class="arch">' +
+        '<div class="panel"><span class="eyebrow">Raspberry Pi 4 (4 GB)</span><h3>Sees and decides</h3><div class="chip-list"><span class="chip">Pi Camera Module 3</span><span class="chip">MediaPipe Pose</span><span class="chip">Request detection</span><span class="chip">Target tracking</span><span class="chip">Bangla voice clips</span><span class="chip">Amplifier and speaker</span></div></div>' +
+        '<div class="arch-link"><span>USB serial</span><span class="wire" aria-hidden="true"></span><span>commands and sensor data</span></div>' +
+        '<div class="panel"><span class="eyebrow">ESP32 DevKit</span><h3>Moves and senses</h3><div class="chip-list"><span class="chip">4 motors via 2 × TB6612FNG</span><span class="chip">3 obstacle sensors</span><span class="chip">MPU6050 gyro</span><span class="chip">Lid servo</span><span class="chip">IR drop sensor</span><span class="chip">Fill level sensor</span><span class="chip">OLED eyes</span></div></div>' +
+      '</div></div>' +
+      '<div class="two"><div class="panel"><h3>Software</h3><ul class="clean"><li>Raspberry Pi OS (64 bit), Python 3</li><li>MediaPipe Pose (MoveNet Lightning as a backup)</li><li>OpenCV for the camera feed, pyserial for the link to the ESP32</li><li>ESP32 firmware in C++ with the Arduino framework</li></ul></div>' +
+      '<div class="panel"><h3>Power</h3><ul class="clean"><li>3 × 18650 cells (3S) with a BMS board</li><li>XL4015 at 5 V for the Pi, since it needs a steady 3 A</li><li>One LM2596 at 5 V for the ESP32 and sensors, one at 6 V for the servo</li><li>Expected run time about 1 to 2 hours, enough for a class demo or a test session</li></ul></div></div>' +
+    '</section>';
+  }
+
+  function paperTitleEl(p, idx){
+    var link = safeUrl(p.link);
+    var num = idx != null ? '<span class="mono muted">[' + idx + ']</span> ' : '';
+    var hri = p.hri24 ? ' <span class="tag">HRI 2024</span>' : '';
+    if (hasWriteup(p)){
+      return '<button type="button" class="paper-title-btn" data-open-paper="' + p.id + '" aria-haspopup="dialog">' + num + esc(p.title) + '</button>' + hri;
+    }
+    if (link){
+      return num + '<a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(p.title) + '</a>' + hri;
+    }
+    return '<span class="paper-title-static">' + num + esc(p.title) + '</span>' + hri;
+  }
+
+  function paperCard(p, idx){
+    var link = safeUrl(p.link);
+    var meta = [p.authors, p.venue, p.year].filter(Boolean).map(esc).join(" · ");
+    var preview = '';
+    if (hasWriteup(p)){
+      preview = '<div class="paper-meta" style="font-size:.88rem;color:var(--muted)">Tap the title to read the full write-up (objective, methods, results, conclusions, limitations).</div>';
+    }
+    var body = '<div class="paper"><div class="paper-title">' + paperTitleEl(p, idx) + '</div>' +
+      (meta ? '<div class="paper-meta">' + meta + '</div>' : '') +
+      preview +
+      '<dl class="paper-row"><dt>What they did</dt><dd>' + (p.summary ? esc(p.summary) : '<span class="muted">Summary to be written after reading.</span>') + '</dd>' +
+      '<dt>For BinGo</dt><dd>' + (p.relevance ? esc(p.relevance) : '<span class="muted">To be added.</span>') + '</dd></dl>' +
+      (editing ? '<div><button class="btn small danger" type="button" data-remove="papers" data-id="' + p.id + '">Remove paper</button></div>' : '') +
+      '</div>';
+    return body;
+  }
+
+  function pageLiterature(){
+    var st = S();
+    var shared = st.papers.filter(function(p){ return p.owner === "shared"; });
+    var sharedHtml = shared.map(function(p,i){ return paperCard(p, i+1); }).join("");
+    var groups = st.members.map(function(m,i){
+      var mine = st.papers.filter(function(p){ return p.owner === m.id; });
+      return '<div style="display:grid;gap:12px"><div class="group-head"><h3>' + esc(memberName(m,i)) + '</h3></div>' +
+        (mine.length ? '<div class="papers">' + mine.map(function(p){ return paperCard(p); }).join("") + '</div>' : '<p class="empty">No papers added yet.</p>') + '</div>';
+    }).join("");
+    var opts = '<option value="shared">Starter reading (whole team)</option>' + st.members.map(function(m,i){ return '<option value="' + m.id + '">' + esc(memberName(m,i)) + '</option>'; }).join("");
+    var form = editing ? '<form class="form" id="paper-form"><h3>Add a paper</h3><div class="form-grid">' +
+      '<div class="field"><label for="np-owner">Added by</label><select id="np-owner">' + opts + '</select></div>' +
+      '<div class="field"><label for="np-year">Year</label><input type="text" id="np-year" placeholder="2024"></div>' +
+      '<div class="field full"><label for="np-title">Title</label><input type="text" id="np-title" required></div>' +
+      '<div class="field"><label for="np-authors">Authors</label><input type="text" id="np-authors"></div>' +
+      '<div class="field"><label for="np-venue">Venue</label><input type="text" id="np-venue" placeholder="HRI 2024, pages"></div>' +
+      '<div class="field full"><label for="np-link">Link (DOI or IEEE Xplore page)</label><input type="url" id="np-link" placeholder="https://"></div>' +
+      '<div class="field full"><label for="np-summary">What they did</label><textarea id="np-summary"></textarea></div>' +
+      '<div class="field full"><label for="np-rel">Why it matters for BinGo (gap or idea we use)</label><textarea id="np-rel"></textarea></div>' +
+      '<label class="check field full" for="np-hri"><input type="checkbox" id="np-hri"> From the HRI 2024 proceedings</label>' +
+      '</div><div><button class="btn primary small" type="submit">Add paper</button></div></form>' : '';
+    return '<section class="page">' +
+      '<div class="page-head"><span class="eyebrow">Literature review</span><h2>Papers we are reading</h2><p>Click any paper title that has a full write-up to open a pop-up with Objective, Methods, Results, Conclusions and Limitations.</p></div>' +
+      form +
+      '<div style="display:grid;gap:12px"><div class="group-head"><h3>Starter reading</h3><span class="muted" style="font-size:.9rem">The trash barrel robot line of work that BinGo builds on</span></div><div class="papers">' + sharedHtml + '</div></div>' +
+      groups +
+    '</section>';
+  }
+
+  function pageHardware(){
+    var st = S(), rows = "", g = null;
+    st.components.forEach(function(c){
+      if (c.g !== g){ g = c.g; rows += '<tr class="group"><td colspan="5">' + esc(g) + '</td></tr>'; }
+      rows += '<tr><td>' + esc(c.name) + '</td><td class="num">' + c.qty + '</td><td class="num">' + taka(c.price) + '</td><td class="num">' + taka(c.qty*c.price) + '</td><td>' + (c.checked ? '<span class="tag">shop price</span>' : '<span class="tag est">estimate</span>') + '</td></tr>';
+    });
+    rows += '<tr class="total"><td colspan="3">Total</td><td class="num">' + taka(total()) + '</td><td></td></tr>';
+    var n = st.members.length || 1;
+    return '<section class="page">' +
+      '<div class="page-head"><span class="eyebrow">Hardware and cost</span><h2>What goes into BinGo</h2><p>Prices in taka. Items marked “shop price” come from Dhaka shop listings checked in September 2026. The rest are typical market prices.</p></div>' +
+      '<div class="hud"><div><span class="eyebrow">Parts estimate</span><b>' + taka(total()) + '</b></div><div><span class="eyebrow">Per member (' + n + ')</span><b>' + taka(Math.round(total()/n)) + '</b></div><div><span class="eyebrow">Items</span><b>' + st.components.length + ' lines</b></div></div>' +
+      '<div class="table-wrap"><table><thead><tr><th>Component</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Line total</th><th>Source</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="two"><div class="panel soft"><h3>Ways to bring it down to about ৳22,000</h3><ul class="clean"><li>Use a clone Pi camera module (about ৳880) instead of Camera Module 3. Its 5 MP is enough for pose detection.</li><li>Leave out the LED ring, voltmeter and gyro at first.</li><li>Borrow the soldering iron, multimeter and charger from the lab.</li></ul></div>' +
+      '<div class="panel note"><h3>Before buying</h3><ul class="clean"><li>Get the 180 degree MG996R. The “360 degree continuous” version spins like a motor and cannot hold the lid open. Test it when it arrives.</li><li>Avoid very cheap 18650 cells. Fake capacity ratings are common.</li><li>Set every buck converter with a multimeter before connecting anything.</li></ul></div></div>' +
+      '<p class="muted" style="font-size:.9rem">Price sources: <a href="https://www.bdtronics.com/raspberry-pi-4b.html" target="_blank" rel="noopener">BDTronics</a>, <a href="https://store.roboticsbd.com/raspberry-pi/2663-raspberry-pi-camera-module-3-robotics-bangladesh.html" target="_blank" rel="noopener">RoboticsBD</a>, <a href="https://techshopbd.com/product/esp32-devkit-v1" target="_blank" rel="noopener">TechShopBD</a>, <a href="https://www.electronics.com.bd/raspberry-pi/raspberry-pi-4-model-b-board-with-4gb-lpddr4-sdram" target="_blank" rel="noopener">ElectronicsBD</a>.</p>' +
+    '</section>';
+  }
+
+  function pageUpdates(){
+    var st = S();
+    var list = st.updates.slice().sort(function(a,b){ return (b.date || "").localeCompare(a.date || ""); });
+    var items = list.map(function(u){
+      var done = lines(u.done), next = lines(u.next);
+      return '<article class="update"><div class="update-when"><span class="update-week">' + esc(u.week) + '</span><span class="mono muted">' + fmtDate(u.date) + '</span>' +
+        (editing ? '<button class="btn small danger" type="button" data-remove="updates" data-id="' + u.id + '" style="justify-self:start;margin-top:8px">Remove</button>' : '') + '</div>' +
+        '<div class="update-body">' +
+          (done.length ? '<div><h4>Done</h4><ul class="clean">' + done.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + '</ul></div>' : '') +
+          (next.length ? '<div><h4>Next</h4><ul class="clean">' + next.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + '</ul></div>' : '') +
+          (u.blockers ? '<div><h4>Blockers</h4><p>' + esc(u.blockers) + '</p></div>' : '') +
+        '</div></article>';
+    }).join("");
+    var form = editing ? '<form class="form" id="update-form"><h3>Add a weekly update</h3><div class="form-grid">' +
+      '<div class="field"><label for="nu-week">Week</label><input type="text" id="nu-week" placeholder="Week 3" required></div>' +
+      '<div class="field"><label for="nu-date">Date</label><input type="date" id="nu-date"></div>' +
+      '<div class="field full"><label for="nu-done">Done this week (one item per line)</label><textarea id="nu-done"></textarea></div>' +
+      '<div class="field full"><label for="nu-next">Plan for next week (one item per line)</label><textarea id="nu-next"></textarea></div>' +
+      '<div class="field full"><label for="nu-block">Blockers</label><input type="text" id="nu-block"></div>' +
+      '</div><div><button class="btn primary small" type="submit">Add update</button></div></form>' : '';
+    return '<section class="page"><div class="page-head"><span class="eyebrow">Weekly updates</span><h2>Progress, week by week</h2><p>We open this page for the weekly presentation in class. Newest first.</p></div>' + form + '<div class="timeline">' + (items || '<p class="empty">No updates yet.</p>') + '</div></section>';
+  }
+
+  function editbar(){
+    if (!editing) return "";
+    return '<div class="editbar" role="region" aria-label="Editing"><div class="editbar-row"><p>' + (saving ? "Saving…" : (dirty ? "You have unsaved changes. Saving updates the site for everyone." : "Editing. Change the team, add papers or add a weekly update.")) + '</p><div class="btns"><button class="btn small" type="button" id="edit-cancel"' + (saving ? " disabled" : "") + '>Cancel</button><button class="btn small primary" type="button" id="edit-save"' + ((saving || !dirty) ? " disabled" : "") + '>Save changes</button></div></div></div>';
+  }
+
+  function paperModal(){
+    if (!openPaperId) return "";
+    var p = findPaper(openPaperId);
+    if (!p || !hasWriteup(p)) { openPaperId = null; return ""; }
+    var w = p.writeup;
+    var link = safeUrl(p.link);
+    function block(label, text){
+      if (!text) return "";
+      return '<div><h4>' + esc(label) + '</h4><p>' + esc(text) + '</p></div>';
+    }
+    return '<div class="modal-overlay" id="paper-modal-overlay" role="presentation">' +
+      '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="paper-modal-title">' +
+        '<div class="modal-head">' +
+          '<div><span class="eyebrow">Paper write-up</span><h3 id="paper-modal-title">' + esc(p.title) + '</h3>' +
+            ((p.authors || p.venue || p.year) ? '<div class="modal-meta">' + [p.authors, p.venue, p.year].filter(Boolean).map(esc).join(" · ") + '</div>' : '') +
+          '</div>' +
+          '<button class="modal-close" type="button" id="paper-modal-close" aria-label="Close">×</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          block("Objective", w.objective) +
+          block("Methods", w.methods) +
+          block("Results", w.results) +
+          block("Conclusions", w.conclusions) +
+          block("Limitations", w.limitations) +
+          (p.summary ? '<div><h4>Short summary</h4><p>' + esc(p.summary) + '</p></div>' : '') +
+          (p.relevance ? '<div><h4>For BinGo</h4><p>' + esc(p.relevance) + '</p></div>' : '') +
+        '</div>' +
+        '<div class="modal-foot">' +
+          (link ? '<a class="btn small" href="' + esc(link) + '" target="_blank" rel="noopener">Open source</a>' : '<span></span>') +
+          '<button class="btn small primary" type="button" id="paper-modal-done">Close</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var noticeTimer = null;
+  function notice(msg){
+    var n = document.getElementById("notice");
+    if (!n){ n = document.createElement("div"); n.id = "notice"; n.className = "notice"; n.setAttribute("role","status"); document.body.appendChild(n); }
+    n.textContent = msg; n.hidden = false;
+    clearTimeout(noticeTimer); noticeTimer = setTimeout(function(){ n.hidden = true; }, 7000);
+  }
+
+  function render(keepScroll){
+    var y = window.scrollY;
+    var cur = current();
+    var body = {home:pageHome,team:pageTeam,research:pageResearch,system:pageSystem,literature:pageLiterature,hardware:pageHardware,updates:pageUpdates}[cur]();
+    app.innerHTML = header() + '<main><div class="wrap">' + body + '</div></main>' +
+      '<footer><div class="wrap"><span>BinGo · Robotics course project · Independent University, Bangladesh · 2026</span><span>Domain: Creative Social Robot and Application</span></div></footer>' +
+      editbar() + paperModal();
+    document.title = "BinGo";
+    if (keepScroll) window.scrollTo(0, y);
+  }
+
+  function markDirty(){ if (!dirty){ dirty = true; var s = document.getElementById("edit-save"); if (s) s.disabled = false; var p = document.querySelector(".editbar p"); if (p) p.textContent = "You have unsaved changes. Saving updates the site for everyone."; } }
+
+  function onField(e){
+    if (!editing) return;
+    var t = e.target, f = t.dataset && t.dataset.field;
+    if (!f) return;
+    if (t.dataset.coll === "team"){ DRAFT.teamNo = t.value; markDirty(); return; }
+    var coll = DRAFT[t.dataset.coll]; if (!coll) return;
+    var obj = coll.find(function(x){ return x.id === t.dataset.id; }); if (!obj) return;
+    obj[f] = t.type === "checkbox" ? t.checked : t.value;
+    markDirty();
+  }
+  document.addEventListener("input", onField);
+  document.addEventListener("change", onField);
+
+  function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+
+  document.addEventListener("submit", function(e){
+    if (!editing) return;
+    if (e.target.id === "paper-form"){
+      e.preventDefault();
+      var title = val("np-title"); if (!title){ notice("Add a title first."); return; }
+      DRAFT.papers.push({id:uid("p"),owner:val("np-owner") || "shared",title:title,authors:val("np-authors"),venue:val("np-venue"),year:val("np-year"),link:val("np-link"),hri24:!!(document.getElementById("np-hri")||{}).checked,summary:val("np-summary"),relevance:val("np-rel")});
+      markDirty(); render(true); notice("Paper added. Press Save changes to keep it.");
+    } else if (e.target.id === "update-form"){
+      e.preventDefault();
+      var wk = val("nu-week"); if (!wk){ notice("Give the update a week label."); return; }
+      DRAFT.updates.push({id:uid("u"),week:wk,date:val("nu-date"),done:val("nu-done"),next:val("nu-next"),blockers:val("nu-block")});
+      markDirty(); render(true); notice("Update added. Press Save changes to keep it.");
+    }
+  });
+
+  document.addEventListener("click", function(e){
+    var t = e.target.closest ? e.target.closest("button, [data-open-paper]") : null;
+    // open paper write-up
+    if (t && t.dataset && t.dataset.openPaper){
+      openPaperId = t.dataset.openPaper;
+      render(true);
+      var closeBtn = document.getElementById("paper-modal-close");
+      if (closeBtn) closeBtn.focus();
+      return;
+    }
+    // close modal when clicking on overlay backdrop
+    if (e.target && e.target.id === "paper-modal-overlay"){
+      openPaperId = null; render(true); return;
+    }
+    if (!t || t.tagName !== "BUTTON") return;
+    if (t.id === "paper-modal-close" || t.id === "paper-modal-done"){
+      openPaperId = null; render(true); return;
+    }
+    if (t.id === "edit-start"){ DRAFT = JSON.parse(JSON.stringify(STATE)); editing = true; dirty = false; render(true); return; }
+    if (t.id === "edit-cancel"){ editing = false; dirty = false; DRAFT = null; render(true); return; }
+    if (t.id === "edit-save"){ save(); return; }
+    if (t.id === "add-member"){ DRAFT.members.push({id:uid("m"),name:"",sid:"",leader:"",role:"",linkedin:"",github:"",researchgate:"",intro:""}); markDirty(); render(true); return; }
+    if (t.dataset.remove && editing){
+      var c = t.dataset.remove, id = t.dataset.id;
+      DRAFT[c] = DRAFT[c].filter(function(x){ return x.id !== id; });
+      if (c === "members"){ DRAFT.papers.forEach(function(p){ if (p.owner === id) p.owner = "shared"; }); }
+      markDirty(); render(true);
+    }
+  });
+
+  // Esc closes modal
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && openPaperId){ openPaperId = null; render(true); }
+  });
+
+  window.addEventListener("hashchange", function(){ render(false); window.scrollTo(0,0); });
+
+  function buildDoc(state){
+    var css = document.getElementById("bingo-css").textContent;
+    var js = document.getElementById("bingo-js").textContent;
+    var json = JSON.stringify(state, null, 1).replace(/</g, "\\u003c");
+    var sc = "<" + "/script>";
+    return "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\"><title>BinGo</title>" +
+      "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"stylesheet\" href=\"" + FONTS + "\">" +
+      "<style id=\"bingo-css\">" + css + "</style></head><body><div id=\"app\"></div>" +
+      "<script type=\"application/json\" id=\"bingo-state\">" + json + sc +
+      "<script id=\"bingo-js\">" + js + sc + "</body></html>";
+  }
+
+  function save(tried){
+    if (!ART || saving) return;
+    saving = true; render(true);
+    ART.publish(buildDoc(DRAFT)).then(function(){
+      notice("Saved. The page is reloading with your changes.");
+    }).catch(function(err){
+      saving = false;
+      var code = err && err.code;
+      if (code === "conflict"){ notice("Someone else saved a newer version first. The page is reloading to it, so add your changes again after it loads."); render(true); return; }
+      if (code === "not_writer" || code === "not_granted" || code === "consent_required" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed"){
+        readOnly = true; editing = false; DRAFT = null; dirty = false; render(true);
+        notice("This view is read-only. Ask the site owner to give you edit access, then try again."); return;
+      }
+      if (code === "rate_limited"){ render(true); notice("Too many saves in a short time. Wait a minute, then press Save changes again."); return; }
+      if (code === "too_large"){ render(true); notice("The site is too large to save. Remove a few long entries and try again."); return; }
+      if (!tried){ setTimeout(function(){ save(true); }, 800 + Math.random()*1200); return; }
+      render(true); notice("Saving failed because of a connection problem. Your edits are still here. Press Save changes to try again.");
+    });
+  }
+
+  render(false);
+
+  try {
+    if (window.claude && typeof window.claude.use === "function"){
+      window.claude.use("artifact").then(function(ns){ if (ns){ ART = ns; if (!editing) render(true); } }).catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>
