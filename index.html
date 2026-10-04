@@ -56,6 +56,8 @@ p{margin:0}
 .nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
 .edit-toggle{flex:0 0 auto;font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:8px;cursor:pointer}
 .edit-toggle:hover{border-color:var(--green)}
+.theme-toggle{flex:0 0 auto;display:grid;place-items:center;width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;padding:0}
+.theme-toggle:hover{border-color:var(--green);color:var(--green)}
 @media (max-width:760px){
   .top-row{flex-wrap:wrap;gap:8px 12px}
   .nav{order:3;flex-basis:100%;justify-content:flex-start;margin-inline:-4px}
@@ -220,6 +222,22 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 .r-cup{fill:var(--surface);stroke:var(--ink);stroke-width:2.5}
 .r-cup-band{fill:var(--yellow)}
 .r-motion{stroke:var(--muted);stroke-width:3;stroke-linecap:round}
+.r-bot{animation:r-drive 5s ease-in-out infinite}
+.r-spin{transform-box:view-box;animation:r-roll 5s ease-in-out infinite}
+.r-bob{transform-box:view-box;transform-origin:160px 250px;animation:r-bob .5s ease-in-out infinite alternate}
+.r-lidg{transform-box:view-box;transform-origin:82px 96px;animation:r-lid 5s ease-in-out infinite}
+.r-cupg{transform-box:view-box;transform-origin:262px 40px;animation:r-cup 5s ease-in-out infinite}
+.r-shadow{transform-box:view-box;transform-origin:160px 326px;animation:r-shadow 5s ease-in-out infinite}
+.r-motion{animation:r-lines 5s ease-in-out infinite}
+.r-motion2{animation-delay:.15s}
+@keyframes r-drive{0%,100%{transform:translateX(-14px)}45%,60%{transform:translateX(14px)}}
+@keyframes r-roll{0%,100%{transform:rotate(0deg)}45%,60%{transform:rotate(360deg)}}
+@keyframes r-bob{from{transform:translateY(0)}to{transform:translateY(-2.5px)}}
+@keyframes r-lid{0%,40%,100%{transform:rotate(-16deg)}50%,62%{transform:rotate(-27deg)}}
+@keyframes r-cup{0%,40%,100%{transform:translate(0,0)}52%{transform:translate(-4px,-6px)}62%{transform:translate(0,0)}}
+@keyframes r-shadow{0%,100%{transform:translateX(-14px) scaleX(1)}45%,60%{transform:translateX(14px) scaleX(1)}}
+@keyframes r-lines{0%,10%{opacity:1}40%,70%{opacity:0}90%,100%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.r-bot,.r-spin,.r-bob,.r-lidg,.r-cupg,.r-shadow,.r-motion{animation:none}.r-lidg{transform:rotate(-16deg)}}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion: reduce){.r-eye{animation:none}}
 </style>
@@ -1453,30 +1471,52 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
   function hasWriteup(p){ return p.writeup && (p.writeup.objective || p.writeup.methods || p.writeup.results || p.writeup.conclusions || p.writeup.limitations); }
 
   function robot(){
-    return '<svg viewBox="0 0 320 340" role="img" aria-label="Drawing of BinGo: a green dustbin on a four wheel robot base, with a yellow lid lifting open, a small camera and two glowing eyes on a screen">' +
+    function wheel(cx){ return '<g class="r-spin" style="transform-origin:' + cx + 'px 298px"><circle class="r-wheel" cx="' + cx + '" cy="298" r="26"/><circle class="r-hub" cx="' + cx + '" cy="298" r="8"/><rect class="r-hub" x="' + (cx-2) + '" y="276" width="4" height="12" rx="2"/><rect class="r-hub" x="' + (cx-2) + '" y="308" width="4" height="12" rx="2"/></g>'; }
+    return '<svg viewBox="0 0 320 340" role="img" aria-label="Animated drawing of BinGo: a green dustbin on a four wheel robot base rolling forward, with its yellow lid opening, a small camera and two glowing eyes">' +
       '<ellipse class="r-shadow" cx="160" cy="326" rx="130" ry="10"/>' +
-      '<line class="r-motion" x1="8" y1="262" x2="30" y2="262"/><line class="r-motion" x1="0" y1="282" x2="26" y2="282"/>' +
+      '<g class="r-bot">' +
+      '<line class="r-motion" x1="8" y1="262" x2="30" y2="262"/><line class="r-motion r-motion2" x1="0" y1="282" x2="26" y2="282"/>' +
       '<rect class="r-chassis" x="40" y="248" width="240" height="44" rx="10"/>' +
-      '<circle class="r-wheel" cx="84" cy="298" r="26"/><circle class="r-hub" cx="84" cy="298" r="8"/>' +
-      '<circle class="r-wheel" cx="236" cy="298" r="26"/><circle class="r-hub" cx="236" cy="298" r="8"/>' +
+      wheel(84) + wheel(236) +
+      '<g class="r-bob">' +
       '<path class="r-body" d="M68 250 L252 250 L238 96 L82 96 Z"/>' +
       '<line class="r-rib" x1="104" y1="200" x2="100" y2="240"/><line class="r-rib" x1="160" y1="200" x2="160" y2="240"/><line class="r-rib" x1="216" y1="200" x2="220" y2="240"/>' +
-      '<g transform="rotate(-16 82 96)"><rect class="r-lid" x="76" y="80" width="172" height="16" rx="6"/></g><circle class="r-chassis" cx="84" cy="94" r="5"/>' +
+      '<g class="r-lidg"><rect class="r-lid" x="76" y="80" width="172" height="16" rx="6"/></g><circle class="r-chassis" cx="84" cy="94" r="5"/>' +
       '<circle class="r-cam" cx="160" cy="116" r="8"/><circle class="r-cam-ring" cx="160" cy="116" r="4"/>' +
       '<rect class="r-screen" x="108" y="134" width="104" height="56" rx="12"/>' +
       '<rect class="r-eye" x="132" y="148" width="14" height="26" rx="7"/><rect class="r-eye" x="174" y="148" width="14" height="26" rx="7"/>' +
-      '<g transform="rotate(28 262 40)"><path class="r-cup" d="M246 18 L278 18 L272 62 L252 62 Z"/><rect class="r-cup-band" x="249" y="34" width="26" height="9"/></g>' +
+      '</g></g>' +
+      '<g class="r-cupg"><g transform="rotate(28 262 40)"><path class="r-cup" d="M246 18 L278 18 L272 62 L252 62 Z"/><rect class="r-cup-band" x="249" y="34" width="26" height="9"/></g></g>' +
     '</svg>';
   }
   function markSvg(){
     return '<svg class="brand-mark" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="21" width="24" height="5" rx="2" fill="var(--ink)"/><path d="M6 21 L24 21 L22.5 8 L7.5 8 Z" fill="var(--green)"/><rect x="5" y="4" width="20" height="3.5" rx="1.5" fill="var(--yellow)" transform="rotate(-14 5 6)"/><rect x="11" y="12" width="2.4" height="4.5" rx="1.2" fill="var(--eye)"/><rect x="16.6" y="12" width="2.4" height="4.5" rx="1.2" fill="var(--eye)"/></svg>';
   }
 
+  function isDark(){
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  (function(){ try { var t = localStorage.getItem('bingo-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('#theme-toggle') : null;
+    if (!b) return;
+    var next = isDark() ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('bingo-theme', next); } catch(err){}
+    render(true);
+  });
+
   function header(){
     var cur = current();
     var nav = PAGES.map(function(p){ return '<a href="#' + p[0] + '"' + (p[0] === cur ? ' aria-current="page"' : '') + '>' + esc(p[1]) + '</a>'; }).join("");
     var edit = (ART && !readOnly && !editing) ? '<button class="edit-toggle" id="edit-start" type="button">Edit site</button>' : '';
-    return '<header class="top"><div class="wrap top-row"><a class="brand" href="#home">' + markSvg() + '<span class="brand-name">Bin<span>Go</span></span></a><nav class="nav" aria-label="Pages">' + nav + '</nav>' + edit + '</div></header>';
+    var dark = isDark();
+    var themeBtn = '<button class="theme-toggle" id="theme-toggle" type="button" aria-label="' + (dark ? 'Switch to light theme' : 'Switch to dark theme') + '" title="' + (dark ? 'Light theme' : 'Dark theme') + '">' + (dark
+      ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>') + '</button>';
+    return '<header class="top"><div class="wrap top-row"><a class="brand" href="#home">' + markSvg() + '<span class="brand-name">Bin<span>Go</span></span></a><nav class="nav" aria-label="Pages">' + nav + '</nav>' + themeBtn + edit + '</div></header>';
   }
 
   function latestUpdate(){
